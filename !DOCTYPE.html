@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Artsify - Instant Download Wallpapers</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; font-family: Arial, sans-serif; }
+    body { 
+      color:#111; line-height:1.5;
+      background: url('https://th.bing.com/th/id/R.f0289199c1914d98e39d47c736176c0b?rik=ty85yPd3cEwGLw&pid=ImgRaw&r=0') no-repeat center center fixed; 
+      background-size: cover; 
+    }
+    body::before {
+      content:"";
+      position:fixed; top:0; left:0; width:100%; height:100%;
+      background: rgba(255,255,255,0.85);
+      z-index:-1;
+    }
+    header { background: rgba(0,0,0,0.8); padding:20px; text-align:center; }
+    header h1 { color:#fff; font-size:2.5em; }
+    nav a { margin:0 10px; color:#fff; text-decoration:none; font-weight:bold; }
+    nav a:hover { text-decoration: underline; }
+    .hero { text-align:center; padding:50px 20px; }
+    .hero h2 { font-size:2em; color:#111; margin-bottom:10px; }
+    .hero p { color:#333; margin-bottom:20px; }
+    .hero a { background:#111; color:#fff; padding:10px 20px; border-radius:25px; text-decoration:none; font-weight:bold; }
+    .hero a:hover { background:#333; }
+    #products { padding:40px 20px; max-width:1000px; margin:auto; }
+    #products h3 { text-align:center; color:#111; margin-bottom:30px; font-size:1.8em; }
+    .product-grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; }
+    .product { background: rgba(255,255,255,0.95); padding:20px; border-radius:15px; width:250px; text-align:center; box-shadow:0 2px 6px rgba(0,0,0,0.1); }
+    .product img { width:100%; height:150px; object-fit:cover; border-radius:10px; margin-bottom:10px; }
+    .product h4 { color:#111; margin-bottom:5px; }
+    .product p { font-size:0.9em; color:#333; margin-bottom:10px; }
+    .product .price { font-weight:bold; color:#111; margin-bottom:10px; }
+    .product button { background:#111; color:#fff; border:none; padding:10px 15px; border-radius:20px; cursor:pointer; }
+    .product button:hover { background:#333; }
+    #contact { padding:40px 20px; background: rgba(255,255,255,0.95); max-width:600px; margin:auto; border-radius:15px; margin-top:40px; }
+    #contact h3 { text-align:center; color:#111; margin-bottom:20px; font-size:1.5em; }
+    #contact form { display:flex; flex-direction:column; gap:10px; }
+    #contact input, #contact textarea { padding:10px; border-radius:10px; border:1px solid #111; width:100%; }
+    #contact button { background:#111; color:#fff; padding:10px; border-radius:20px; border:none; cursor:pointer; }
+    #contact button:hover { background:#333; }
+    footer { text-align:center; padding:20px; color:#111; font-size:0.9em; margin-top:40px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Artsify</h1>
+  <nav>
+    <a href="#products">Products</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <h2>Instant Download Wallpapers</h2>
+  <p>High-quality wallpapers you can download immediately after payment.</p>
+  <a href="#products">Shop Now</a>
+</section>
+
+<section id="products">
+  <h3>Products</h3>
+  <div class="product-grid">
+    <div class="product">
+      <img src="https://happygamer.com/wp-content/uploads/2025/05/diablo-iv-and-berserk-collab-brings-demonic-wallpapers-to-fans.webp" alt="Diablo & Berserk Wallpaper">
+      <h4>Diablo & Berserk Wallpaper</h4>
+      <p>Epic demonic high-resolution wallpaper.</p>
+      <div class="price">$0.99</div>
+      <button onclick="buyProduct('price_diablo')">Buy & Download</button>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <h3>Contact</h3>
+  <form onsubmit="alert('Message sent!'); return false;">
+    <input type="text" placeholder="Your name" required>
+    <input type="email" placeholder="Your email" required>
+    <textarea placeholder="Message" rows="4" required></textarea>
+    <button type="submit">Send Message</button>
+  </form>
+</section>
+
+<footer>
+  © 2025 Artsify — All rights reserved
+</footer>
+
+<!-- Stripe -->
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+  // Stripe publishable key
+  const stripe = Stripe('pk_test_51SFZDDJP5HYDHMcI86wiJdqpDjB923HiIdtcQji82vLgzHnU6Cc9nHmypfsO9JudPPBRz8nkWafgGnJQvXi0Wue0005vQrXIWM');
+
+  // Price map with working Price ID
+  const priceMap = {
+    price_diablo: 'price_1SFZHyJP5HYDHMcIhN4ln7Df'
+  };
+
+  function buyProduct(productKey) {
+    stripe.redirectToCheckout({
+      lineItems: [{ price: priceMap[productKey], quantity: 1 }],
+      mode: 'payment',
+      successUrl: window.location.href + '?download=true&product=' + productKey,
+      cancelUrl: window.location.href + '?canceled=true',
+    }).then(function(result) {
+      if(result.error){
+        alert(result.error.message);
+      }
+    });
+  }
+
+  // Instant download after successful payment
+  if(window.location.search.includes('download=true')){
+    const params = new URLSearchParams(window.location.search);
+    const product = params.get('product');
+    let downloadUrl = '';
+    if(product === 'price_diablo') downloadUrl = 'https://happygamer.com/wp-content/uploads/2025/05/diablo-iv-and-berserk-collab-brings-demonic-wallpapers-to-fans.webp';
+    if(downloadUrl) window.location.href = downloadUrl;
+  }
+</script>
+
+</body>
+</html>
